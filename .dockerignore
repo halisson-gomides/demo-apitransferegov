@@ -1,0 +1,9 @@
+**/__pycache__/
+**/*.pyc
+**/*.pfx
+**/*.sql
+**/.env
+.vscode/
+.ipynb_checkpoints
+env_api/
+external/
