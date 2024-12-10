@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 
@@ -17,6 +16,7 @@ class PdaListOutput(BaseModel):
     beneficiario_uf: str
     parlamentar_nome: str
     parlamentar_numero_emenda: str | None = None
+
 
 class PdaStatsOutput(BaseModel):
     por_uf: dict

@@ -41,9 +41,7 @@ router = APIRouter()
          response_model=DefaultMessage,
          description="Demonstração de funcionamento")
 async def read_test():
-    return {
-        'message': 'Teste TransfereGOV'
-    }
+    return DefaultMessage(message="Teste API Transferegov")
     
 
 # Incluindo os routers
