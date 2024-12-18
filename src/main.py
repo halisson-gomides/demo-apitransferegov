@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
     # ...
 
 
-app = FastAPI(lifespan=lifespan, docs_url=None)
+app = FastAPI(lifespan=lifespan, docs_url=None, title="API TranfereGov", description="Demonstração")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Router principal
@@ -53,7 +53,7 @@ app.include_router(pda_router)
 async def swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url="/openapi.json",
-        title="API TransfereGov",
+        title="API TransfereGov",        
         swagger_favicon_url="/static/icon.jpg"
     )
 

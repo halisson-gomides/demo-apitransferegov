@@ -1,9 +1,8 @@
 from http import HTTPStatus
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import HTMLResponse
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.schemas import PdaListOutput, PdaStatsOutput
+from src.schemas import PdaListOutput, PdaStatsOutput, DefaultMessage
 from src.database import get_session
 from src.models import PlanoAcaoEspecial
 
@@ -42,7 +41,8 @@ async def read_plano_acao_by_id(plano_id:int, session:AsyncSession=Depends(get_s
 
 @pda_router.get('/search/',
                 status_code=HTTPStatus.OK,
-                response_model=List[PdaListOutput],
+                response_model=List[PdaListOutput],    
+                description="Pesquisa Planos de Ação pela combinação de critérios"                 
                 )
 async def pesquisa_planos(
      ano: Optional[int]=None,
@@ -50,18 +50,21 @@ async def pesquisa_planos(
      muni_beneficiario: Optional[str] = None,
      session:AsyncSession = Depends(get_session)
 ):
-     
-    query = select(PlanoAcaoEspecial)
+    try:     
+        query = select(PlanoAcaoEspecial)
 
-    if ano:
-        query = query.where(PlanoAcaoEspecial.ano_plano_acao == ano)    
-    if uf:
-        query = query.where(PlanoAcaoEspecial.uf_beneficiario_plano_acao == uf.upper())
-    if muni_beneficiario:
-        query = query.where(PlanoAcaoEspecial.nome_beneficiario_plano_acao.ilike(f"%{muni_beneficiario}%"))
+        if ano:
+            query = query.where(PlanoAcaoEspecial.ano_plano_acao == ano)    
+        if uf:
+            query = query.where(PlanoAcaoEspecial.uf_beneficiario_plano_acao == uf.upper())
+        if muni_beneficiario:
+            query = query.where(PlanoAcaoEspecial.nome_beneficiario_plano_acao.ilike(f"%{muni_beneficiario}%"))
 
-    result = await session.execute(query)
-    planos = result.scalars().all()
+        result = await session.execute(query)
+        planos = result.scalars().all()
+    except Exception as err:
+         raise HTTPException(status_code=422, detail="Parâmtetro de consulta inválido.")
+    
     return [{            
                 "plano_acao_id": plano.id_plano_acao,
                 "plano_acao_codigo": plano.codigo_plano_acao,
@@ -74,13 +77,14 @@ async def pesquisa_planos(
                 "parlamentar_nome": plano.nome,
                 "parlamentar_numero_emenda": plano.numero_emenda_parlamentar_plano_acao,
         } for plano in planos]
+    
      
 
 
 @pda_router.get('/stats/', 
                 status_code=HTTPStatus.OK,
                 response_model=PdaStatsOutput,
-                description="Lista Plano de Ação por ID")
+                description="Lista Quantitativos por UF e por Ano")
 async def read_planos_stats(session:AsyncSession=Depends(get_session)):
     from sqlalchemy import func
     # Contagem por UF

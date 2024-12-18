@@ -17,7 +17,8 @@ services:
       retries: 5
       start_period: 10s
     networks:
-      - app-network
+      - pg_network
+    hostname: dbsrv
 
   api_transferegov:
     container_name: ctnr-api_transferegov
@@ -33,15 +34,16 @@ services:
     env_file:
       - .env
     networks:
-      - app-network
+      - pg_network
     volumes:
       - .:/app
 
 networks:
-  app-network:
-    driver: bridge
+  pg_network:
+    name: app_network
+    driver: bridge    
 
 volumes:
   pgdata:
 
-# docker-compose down && docker compose up --build
+# docker-compose down && docker compose up --build -d
