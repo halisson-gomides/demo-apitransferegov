@@ -13,7 +13,7 @@ from sqlalchemy import or_
 
 pda_router = APIRouter(prefix="/plano_acao")
 
-@pda_router.get('/item/{plano_id}', 
+@pda_router.get('/id/{plano_id}', 
                 status_code=HTTPStatus.OK,
                 response_model=PdaListOutput,
                 description="Lista Plano de Ação por ID")
@@ -53,6 +53,9 @@ async def pesquisa_planos(
     try:     
         query = select(PlanoAcaoEspecial)
 
+        if not any([ano, uf, muni_beneficiario]):
+            raise
+
         if ano:
             query = query.where(PlanoAcaoEspecial.ano_plano_acao == ano)    
         if uf:
@@ -63,7 +66,7 @@ async def pesquisa_planos(
         result = await session.execute(query)
         planos = result.scalars().all()
     except Exception as err:
-         raise HTTPException(status_code=422, detail="Parâmtetro de consulta inválido.")
+         raise HTTPException(status_code=HTTPStatus.UNPROCESSABLE_ENTITY, detail="Parâmetros de consulta inválidos.")
     
     return [{            
                 "plano_acao_id": plano.id_plano_acao,

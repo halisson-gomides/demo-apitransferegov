@@ -1,4 +1,5 @@
 import asyncio
+from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
@@ -44,7 +45,7 @@ async def init_db():
         logger.error(f"Erro ao inicializar o banco de dados: {str(e)}")
         raise
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
     if engine is None:
         raise Exception("Database não foi inicializado. Chame init_db() primeiro.")
     
