@@ -14,6 +14,8 @@ class PdaListOutput(BaseModel):
     beneficiario_cnpj: str
     beneficiario_nome: str
     beneficiario_uf: str
+    plano_acao_valor_custeio: float | None = None
+    plano_acao_valor_investimento: float | None = None
     parlamentar_nome: str
     parlamentar_numero_emenda: str | None = None
 

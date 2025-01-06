@@ -12,6 +12,8 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+engine = None
+
 @retry(stop=stop_after_attempt(5), wait=wait_fixed(3))
 async def get_engine():
     """Cria engine com tentativas de reconexão"""
@@ -32,7 +34,6 @@ async def get_engine():
     logger.info("Conexão com o banco de dados estabelecida com sucesso!")
     return engine
 
-engine = None
 
 async def init_db():
     global engine
@@ -44,6 +45,7 @@ async def init_db():
     except Exception as e:
         logger.error(f"Erro ao inicializar o banco de dados: {str(e)}")
         raise
+
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     if engine is None:

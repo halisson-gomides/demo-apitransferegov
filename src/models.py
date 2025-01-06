@@ -1,4 +1,4 @@
-from sqlmodel import Field, SQLModel, Field
+from sqlmodel import Field, SQLModel
 
 
 class PlanoAcaoEspecial(SQLModel, table=True):

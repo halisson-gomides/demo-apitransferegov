@@ -19,9 +19,10 @@ pda_router = APIRouter(prefix="/plano_acao")
                 description="Lista Plano de Ação por ID")
 async def read_plano_acao_by_id(plano_id:int, session:AsyncSession=Depends(get_session)):
     
-        query = select(PlanoAcaoEspecial).where(PlanoAcaoEspecial.id_plano_acao == plano_id)
-        result = await session.execute(query)
-        plano = result.scalar_one_or_none()
+        # query = select(PlanoAcaoEspecial).where(PlanoAcaoEspecial.id_plano_acao == plano_id)
+        # result = await session.execute(query)
+        # plano = result.scalar_one_or_none()
+        plano = await session.get(PlanoAcaoEspecial, plano_id)
         if not plano:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Plano não econtrado")
         
@@ -34,6 +35,8 @@ async def read_plano_acao_by_id(plano_id:int, session:AsyncSession=Depends(get_s
                 "beneficiario_cnpj": plano.cnpj_beneficiario_plano_acao,
                 "beneficiario_nome": plano.nome_beneficiario_plano_acao,
                 "beneficiario_uf": plano.uf_beneficiario_plano_acao,
+                "plano_acao_valor_custeio": plano.valor_custeio_plano_acao,
+                "plano_acao_valor_investimento": plano.valor_investimento_plano_acao,
                 "parlamentar_nome": plano.nome,
                 "parlamentar_numero_emenda": plano.numero_emenda_parlamentar_plano_acao,
         }
